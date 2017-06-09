@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="cloud" class="org.tamacat.storage.S3CloudStorageEngine" singleton="true">
+		<property name="configuration">
+			<value>s3cloud-storage.properties</value>
+		</property>
+	</bean>
+
+	<bean id="local" class="org.tamacat.storage.LocalDiskStorageEngine" singleton="true">
+		<property name="configuration">
+			<value>local-storage.properties</value>
+		</property>
+	</bean>
+</beans>

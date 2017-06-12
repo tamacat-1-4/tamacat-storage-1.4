@@ -18,7 +18,7 @@ import org.tamacat.storage.Encryptor;
 import org.tamacat.storage.StorageData;
 import org.tamacat.util.StringUtils;
 
-public class FileData extends MapBasedORMappingBean implements StorageData {
+public class FileData extends MapBasedORMappingBean<FileData> implements StorageData {
 
 	private static final long serialVersionUID = 1L;
 

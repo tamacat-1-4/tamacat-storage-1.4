@@ -14,4 +14,8 @@ public class StorageFactory {
 	public static final StorageEngine getInstance(String name) {
 		return di.getBean(name, StorageEngine.class);
 	}
+	
+	public static final <T extends StorageEngine>T getInstance(String name, Class<T> type) {
+		return di.getBean(name, type);
+	}
 }

@@ -5,6 +5,7 @@
 package org.tamacat.storage;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Properties;
 
 public interface StorageEngine {
@@ -20,4 +21,6 @@ public interface StorageEngine {
 	String getPath(StorageData data);
 	
 	Properties getConfiguration();
+	
+	Collection<?> list(StorageData data);
 }

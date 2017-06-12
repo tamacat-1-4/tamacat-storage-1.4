@@ -5,17 +5,21 @@
 package org.tamacat.storage;
 
 import java.io.InputStream;
+import java.util.Collection;
 
 import org.tamacat.dao.Condition;
 import org.tamacat.dao.DaoAdapter;
 import org.tamacat.dao.DaoFactory;
 import org.tamacat.dao.Query;
+import org.tamacat.dao.Search;
+import org.tamacat.dao.Sort;
 import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.Columns;
 import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.meta.Table;
 import org.tamacat.dao.meta.Tables;
 import org.tamacat.dao.orm.MapBasedORMappingBean;
+import org.tamacat.dao.test.Data;
 
 public class BlobStorageEngine extends AbstractStorageEngine {
 
@@ -72,7 +76,7 @@ public class BlobStorageEngine extends AbstractStorageEngine {
 		this.table = table;
 	}
 	
-	class BlobTable extends MapBasedORMappingBean {
+	class BlobTable extends MapBasedORMappingBean<BlobTable> {
 		private static final long serialVersionUID = 1L;
 		Column ID = Columns.create(id).type(DataType.STRING).autoGenerateId(true).primaryKey(true);
 		Column BLOB = Columns.create(blob).type(DataType.OBJECT);
@@ -86,12 +90,26 @@ public class BlobStorageEngine extends AbstractStorageEngine {
 			in = data.getInputStream();
 		}
 		
+		public String getId() {
+			return val(ID);
+		}
+		
 		public InputStream getInputStream() {
 			return in;
 		}
 	}
 	
 	class BlobTableDao extends DaoAdapter<BlobTable> {
+		
+		public Collection<BlobTable> searchList(BlobTable data, Sort sort) {
+			Search search = createSearch()
+				.and(data.ID, Condition.LIKE_HEAD, data.getId());
+			Query<BlobTable> query = createQuery()
+				.select(Data.TABLE.getColumns())
+				.and(search, sort);
+			return searchList(query, search.getStart(), search.getMax());
+		}
+		
 		public String getInsertSQL(BlobTable data) {
 			Query<BlobTable> query = createQuery()
 				.addUpdateColumns(data.ID, data.BLOB)
@@ -109,6 +127,18 @@ public class BlobStorageEngine extends AbstractStorageEngine {
 		
 		public int create(BlobTable data) {
 			return executeUpdate(getInsertSQL(data), 1, data.getInputStream());
+		}
+	}
+
+	@Override
+	public Collection<BlobTable> list(StorageData data) {
+		BlobTable blob = new BlobTable(data);
+		BlobTableDao dao = DaoFactory.create(BlobTableDao.class);
+		try {
+			Sort sort = dao.createSort();
+			return dao.searchList(blob, sort);
+		} finally {
+			dao.release();
 		}
 	}
 }

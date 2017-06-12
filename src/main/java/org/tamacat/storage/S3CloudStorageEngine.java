@@ -5,6 +5,7 @@
 package org.tamacat.storage;
 
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Properties;
 
@@ -23,7 +24,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.TransferManager;
-import com.amazonaws.services.s3.transfer.TransferManagerConfiguration;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
 import com.amazonaws.services.s3.transfer.TransferProgress;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
@@ -93,13 +94,10 @@ public class S3CloudStorageEngine extends AbstractStorageEngine {
 		
 		InputStream stream = data.getEncryptedInputStream();
 		
-		TransferManager tx = new TransferManager(s3);
-		TransferManagerConfiguration tc = new TransferManagerConfiguration();
-		tc.setMinimumUploadPartSize(PART_SIZE);
-
-		tx.setConfiguration(tc);
+		TransferManagerBuilder builder = TransferManagerBuilder.standard()
+			.withS3Client(s3).withMinimumUploadPartSize(PART_SIZE);
+		TransferManager tx = builder.build();
 		final Upload upload = tx.upload(bucket, path, stream, meta);
-
 		upload.addProgressListener(new ProgressListener() {
 			// This method is called periodically as your transfer progresses
 			public void progressChanged(ProgressEvent progressEvent) {
@@ -143,7 +141,6 @@ public class S3CloudStorageEngine extends AbstractStorageEngine {
 
 	@Override
 	public InputStream getInputStream(StorageData data) {
-		init();
 		String path = getPath(data);
 		LOG.debug("path="+path);
 
@@ -161,5 +158,11 @@ public class S3CloudStorageEngine extends AbstractStorageEngine {
 			LOG.debug("deleted key="+ sum.getKey());
 		}
 		return true;
+	}
+	
+	public Collection<S3ObjectSummary> list(StorageData data) {
+		String path = getPath(data);
+		ObjectListing list = s3.listObjects(bucket, path);
+		return list.getObjectSummaries();
 	}
 }

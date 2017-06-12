@@ -5,6 +5,9 @@
 package org.tamacat.storage;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 
 import org.tamacat.log.Log;
@@ -48,5 +51,11 @@ public class MockStorageEngine implements StorageEngine {
 	public InputStream getInputStream(StorageData data) {
 		//ByteArrayInputStream in = new ByteArrayInputStream(data.getInputStream());
 		return data.getInputStream();
+	}
+
+	@Override
+	public Collection<String> list(StorageData data) {
+		List<String> list = new ArrayList<>();
+		return list;
 	}
 }

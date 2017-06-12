@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 
 import org.tamacat.dao.exception.InvalidParameterException;
 import org.tamacat.io.RuntimeIOException;
@@ -84,5 +86,11 @@ public class LocalDiskStorageEngine extends AbstractStorageEngine {
 		File file = new File(getPath(data));
 		LOG.debug("delete file: " + file);
 		return file.delete();
+	}
+
+	@Override
+	public Collection<File> list(StorageData data) {
+		File file = new File(getPath(data));
+		return Arrays.asList(file.listFiles());
 	}
 }

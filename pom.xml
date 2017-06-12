@@ -5,27 +5,33 @@
 	<groupId>org.tamacat</groupId>
 	<artifactId>tamacat-storage</artifactId>
 	<packaging>jar</packaging>
-	<version>1.3</version>
+	<version>1.4</version>
 
 	<dependencies>
 
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.10.56</version>
+			<version>1.11.145</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
+		<dependency>
+		    <groupId>com.google.cloud</groupId>
+		    <artifactId>google-cloud-storage</artifactId>
+		    <version>1.1.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.tamacat</groupId>
 			<artifactId>tamacat-core</artifactId>
-			<version>1.3</version>
+			<version>1.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.tamacat</groupId>
 			<artifactId>tamacat-dao</artifactId>
-			<version>1.3</version>
+			<version>1.4</version>
 		</dependency>
 		
 		<dependency>

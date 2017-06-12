@@ -12,11 +12,9 @@ import org.tamacat.util.StringUtils;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.ClasspathPropertiesFileCredentialsProvider;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
+import com.amazonaws.client.builder.AwsClientBuilder.EndpointConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.S3ClientOptions;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 
 public class S3Config {
 
@@ -78,22 +76,21 @@ public class S3Config {
 	}
 
 	public AmazonS3 getS3Client() {
-		AmazonS3 s3 = new AmazonS3Client(provider, config);
-		if (StringUtils.isNotEmpty(endpoint)) {
-			s3.setEndpoint(endpoint);
-		}
-		if (StringUtils.isNotEmpty(region)) {
-			s3.setRegion(Region.getRegion(Regions.valueOf(region)));
-		}
-		S3ClientOptions options = new S3ClientOptions();
+		AmazonS3ClientBuilder s3 = AmazonS3ClientBuilder.standard()
+			.withCredentials(provider).withClientConfiguration(config);
+
 		if (isPathStyleAccess) {
-			options.setPathStyleAccess(true);
+			s3.withPathStyleAccessEnabled(true);
 		}
 		if (isChunkedEncodingDisabled) {
-			options.setChunkedEncodingDisabled(true);
+			s3.disableChunkedEncoding();
 		}
-		s3.setS3ClientOptions(options);
-		return s3;
+
+		if (StringUtils.isNotEmpty(endpoint)) {
+	        EndpointConfiguration endpointConfig = new EndpointConfiguration(endpoint, region);
+	        s3.withEndpointConfiguration(endpointConfig);
+		}
+		return s3.build();
 	}
 
 	public AWSCredentialsProvider getAWSCredentialsProvider() {

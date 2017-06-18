@@ -14,42 +14,54 @@ import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.storage.Storage.BlobListOption;
 
+/**
+ * StorageEngine for GoogleStorage.
+ * @see https://github.com/GoogleCloudPlatform/google-cloud-java
+ */
 public class GoogleStorageEngine extends AbstractStorageEngine {
 
 	static final Log LOG = LogFactory.getLog(S3CloudStorageEngine.class);
 
-	protected String configuration = "google-storage.properties";
 	protected GoogleStorageConfig config;
-	protected String bucket;
-	protected String root;
-
 	protected Storage storage;
 
-	public GoogleStorageEngine() {
-		storage = StorageOptions.getDefaultInstance().getService();
+	public GoogleStorageEngine() {}
+	
+	@Override
+	public void setConfiguration(String configuration) {
+		config = new GoogleStorageConfig(configuration);
+	}
+
+	public Storage getStorage() {
+		if (storage == null) {
+			storage = config.getStorage();
+		}
+		return storage;
 	}
 
 	@Override
 	public long createFile(StorageData data) {
-		BlobInfo blob = storage.create(BlobInfo.newBuilder(bucket, data.getFileName()).build(), data.getInputStream());
+		BlobInfo blob = getStorage().create(
+			BlobInfo.newBuilder(config.getBucket(), data.getFileName()).build(), data.getInputStream()
+		);
 		return blob.getSize();
 	}
 
 	@Override
 	public InputStream getInputStream(StorageData data) {
-		return Channels.newInputStream(storage.reader(bucket, data.getFileName()));
+		return Channels.newInputStream(getStorage().reader(config.getBucket(), data.getPath()));
 	}
 
 	@Override
 	public boolean deleteFile(StorageData data) {
-		return storage.delete(bucket, data.getFileName());
+		return getStorage().delete(config.getBucket(), data.getPath());
 	}
 
 	@Override
 	public String getPath(StorageData data) {
-		String root = getConfiguration().getProperty("root");
+		String root = config.getRoot();
 		if (root.endsWith("/")) {
 			root = root.replaceFirst("/$", "");
 		}
@@ -65,7 +77,8 @@ public class GoogleStorageEngine extends AbstractStorageEngine {
 	}
 	
 	public Collection<Blob> list(StorageData data) {
-		Page<Blob> page = storage.list(getPath(data));
+		String path = getPath(data);
+		Page<Blob> page = getStorage().list(config.getBucket(), BlobListOption.prefix(path));
 		Iterable<Blob> ite = page.getValues();
 		List<Blob> list = new ArrayList<>();
 		ite.forEach(list::add);

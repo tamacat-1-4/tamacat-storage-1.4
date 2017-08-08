@@ -19,7 +19,6 @@ import org.tamacat.dao.meta.DataType;
 import org.tamacat.dao.meta.Table;
 import org.tamacat.dao.meta.Tables;
 import org.tamacat.dao.orm.MapBasedORMappingBean;
-import org.tamacat.dao.test.Data;
 
 public class BlobStorageEngine extends AbstractStorageEngine {
 
@@ -105,7 +104,7 @@ public class BlobStorageEngine extends AbstractStorageEngine {
 			Search search = createSearch()
 				.and(data.ID, Condition.LIKE_HEAD, data.getId());
 			Query<BlobTable> query = createQuery()
-				.select(Data.TABLE.getColumns())
+				.select(data.TABLE.getColumns())
 				.and(search, sort);
 			return searchList(query, search.getStart(), search.getMax());
 		}

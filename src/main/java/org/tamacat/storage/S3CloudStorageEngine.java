@@ -29,20 +29,22 @@ import com.amazonaws.services.s3.transfer.TransferProgress;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.services.s3.transfer.model.UploadResult;
 
+/**
+ * Storage Engine for Amazon S3
+ * default configuration file is "s3cloud-storage.properties"
+ */
 public class S3CloudStorageEngine extends AbstractStorageEngine {
 
 	static final Log LOG = LogFactory.getLog(S3CloudStorageEngine.class);
 
-	protected String configuration = "s3cloud-storage.properties";
 	protected S3Config config;
 	protected String bucket;
 	protected AmazonS3 s3;
-
-	@Override
-	public void setConfiguration(String configuration) {
-		this.configuration = configuration;
+	
+	public S3CloudStorageEngine() {
+		configuration = "s3cloud-storage.properties";
 	}
-
+	
 	@Override
 	public Properties getConfiguration() {
 		init();

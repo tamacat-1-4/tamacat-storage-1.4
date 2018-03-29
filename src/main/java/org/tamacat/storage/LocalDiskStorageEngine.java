@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -91,6 +92,11 @@ public class LocalDiskStorageEngine extends AbstractStorageEngine {
 	@Override
 	public Collection<File> list(StorageData data) {
 		File file = new File(getPath(data));
-		return Arrays.asList(file.listFiles());
+		File[] list = file.listFiles();
+		if (list != null) {
+			return Arrays.asList(list);
+		} else {
+			return new ArrayList<>();
+		}
 	}
 }

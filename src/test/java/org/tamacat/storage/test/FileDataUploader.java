@@ -87,6 +87,9 @@ public class FileDataUploader {
 					} else {
 						id = UniqueCodeGenerator.generate();
 					}
+					if (file == null) {
+						continue;
+					}
 					String fileName = file.getName();
 					LOG.debug(id+"="+fileName);
 					

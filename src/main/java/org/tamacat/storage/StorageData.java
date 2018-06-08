@@ -26,6 +26,8 @@ public interface StorageData {
 	
 	void setHash(String hash);
 	
+	String getMessageDigest();
+
 	String getContentType();
 	
 	String getLastUpdated();

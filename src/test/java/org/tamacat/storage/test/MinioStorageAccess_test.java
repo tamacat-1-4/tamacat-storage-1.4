@@ -11,7 +11,7 @@ public class MinioStorageAccess_test {
 		
 		FileData data = new FileData();
 		data.val(FileData.ID, "/");
-		data.val(FileData.CID, "test");
+		data.val(FileData.TID, "tama");
 		S3CloudStorageEngine engine = StorageFactory.getInstance("minio", S3CloudStorageEngine.class);
 		for (S3ObjectSummary o : engine.list(data)) {
 			System.out.println(o.getKey());

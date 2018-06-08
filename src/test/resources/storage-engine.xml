@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
+	<bean id="test" class="org.tamacat.storage.MockStorageEngine" singleton="true" />
+	
 	<bean id="minio" class="org.tamacat.storage.S3CloudStorageEngine" singleton="true">
 		<property name="configuration">
 			<value>minio-storage.properties</value>
@@ -13,6 +15,12 @@
 		</property>
 	</bean>
 
+	<bean id="aws-s3" class="org.tamacat.storage.AmazonS3StorageEngine" singleton="true">
+		<property name="configuration">
+			<value>aws-s3.properties</value>
+		</property>
+	</bean>
+	
 	<bean id="google" class="org.tamacat.storage.GoogleStorageEngine" singleton="true">
 		<property name="configuration">
 			<value>google-storage.properties</value>

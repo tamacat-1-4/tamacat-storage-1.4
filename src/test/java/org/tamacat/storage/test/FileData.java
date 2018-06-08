@@ -7,6 +7,9 @@ package org.tamacat.storage.test;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.file.Path;
+import java.security.DigestInputStream;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.tamacat.dao.meta.Column;
 import org.tamacat.dao.meta.Columns;
@@ -28,24 +31,16 @@ public class FileData extends MapBasedORMappingBean<FileData> implements Storage
 	public static final Column CONTENT_TYPE = Columns.create("content_type");
 	public static final Column SIZE = Columns.create("size").type(DataType.NUMERIC);
 	public static final Column PATH = Columns.create("path");
-	public static final Column ICON = Columns.create("icon");
 	public static final Column HASH = Columns.create("hash");
 	public static final Column UPDATE_DATE = Columns.create("update_date").type(DataType.TIME).autoTimestamp(true);
-	public static final Column FOLDER_ID = Columns.create("folder_id");
-	public static final Column CID = Columns.create("cid");
+	public static final Column TID = Columns.create("tid");
 	
 	public static final Column ENCRYPTED = Columns.create("encrypted").type(DataType.NUMERIC);
 	public static final Column SECRET_KEY = Columns.create("secret_key");
-	
-	public static final Column TRASH = Columns.create("trash").type(DataType.NUMERIC);
-	public static final Column TRASH_DATE = Columns.create("trash_date").type(DataType.TIME);
-	public static final Column ORIGIN_CATEGORY = Columns.create("origin_category");
-	public static final Column ORIGIN_FOLDER = Columns.create("origin_folder");
-	
+		
 	public static final Table TABLE = Tables.create("file_data")
-		.registerColumn(ID,NAME,DESCRIPTION,CONTENT_TYPE,SIZE,PATH,ICON,
-			HASH,UPDATE_DATE,FOLDER_ID,CID,ENCRYPTED,SECRET_KEY,
-			TRASH,TRASH_DATE,ORIGIN_CATEGORY,ORIGIN_FOLDER);
+		.registerColumn(ID,NAME,DESCRIPTION,CONTENT_TYPE,SIZE,PATH,
+			HASH,UPDATE_DATE,TID,ENCRYPTED,SECRET_KEY);
 
 	protected boolean isDelete;
 	protected boolean isNew;
@@ -94,7 +89,7 @@ public class FileData extends MapBasedORMappingBean<FileData> implements Storage
 	}
 	
 	public String getTenantId() {
-		return val(CID);
+		return val(TID);
 	}
 	
 	/**
@@ -131,6 +126,14 @@ public class FileData extends MapBasedORMappingBean<FileData> implements Storage
 	
 	public void setHash(String hash) {
 		val(HASH, hash);
+	}
+	
+	
+	public String getMessageDigest() {
+		if (stream != null && stream instanceof DigestInputStream) {
+			return DatatypeConverter.printHexBinary(((DigestInputStream)stream).getMessageDigest().digest());
+		}
+		return "";
 	}
 	
 	public String getLastUpdated() {

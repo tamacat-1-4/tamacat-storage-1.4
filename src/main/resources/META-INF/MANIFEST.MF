@@ -1,0 +1,7 @@
+Implementation-Title: tamacat-storage
+Implementation-Version: 1.4-20180609
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.tamacat.storage
+Bundle-Name: tamacat-storage
+Bundle-Vendor: TAMACAT.ORG
+Bundle-Version: 1.4

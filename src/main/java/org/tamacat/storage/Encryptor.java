@@ -5,7 +5,8 @@
 package org.tamacat.storage;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Properties;
 
@@ -36,8 +37,8 @@ public class Encryptor {
 	protected String salt = "DA0a5!3!-9*F7E%&Eb41e#d*6A+aD5ec";
 
 	protected int iterationCount = 32;
-	protected int keyLength = 128; //128,192,256;
-	protected String encoding = "UTF-8";
+	protected int keyLength = 256; //128,192,256;
+	protected Charset encoding = StandardCharsets.UTF_8; //"UTF-8";
 	
 	public Encryptor() {
 		loadProperties();
@@ -95,16 +96,13 @@ public class Encryptor {
 	protected IvParameterSpec getIvParameterSpec(String secretKey) {
 		IvParameterSpec ips = null;
 		if (algorithm.indexOf("CBC")>=0) {
-			try {
-				if (StringUtils.isNotEmpty(iv)) {
-					if (iv.length() >= 16) {
-						iv = iv.substring(0, 16);
-					}
-					ips = new IvParameterSpec(iv.getBytes(encoding));
-				} else if (secretKey.length() >= 16) {
-					ips = new IvParameterSpec(secretKey.substring(0, 16).getBytes(encoding));
+			if (StringUtils.isNotEmpty(iv)) {
+				if (iv.length() >= 16) {
+					iv = iv.substring(0, 16);
 				}
-			} catch (UnsupportedEncodingException e) {
+				ips = new IvParameterSpec(iv.getBytes(encoding));
+			} else if (secretKey.length() >= 16) {
+				ips = new IvParameterSpec(secretKey.substring(0, 16).getBytes(encoding));
 			}
 		}
 		return ips;
@@ -129,7 +127,7 @@ public class Encryptor {
 		try {
 			Cipher cipher = Cipher.getInstance(algorithm);
 			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-			keyGen.init(128);
+			keyGen.init(keyLength);
 			cipher.init(Cipher.DECRYPT_MODE, getSecretKey(secretKey), getIvParameterSpec(secretKey));
 			CipherInputStream cin = new CipherInputStream(in, cipher);
 			return cin;
@@ -152,7 +150,7 @@ public class Encryptor {
 
 	protected SecretKey getSecretKey(String secretKey) throws Exception {
 		//PKCS #5 v2.0 Password based encryption. 
-		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+		SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
 		KeySpec spec = new PBEKeySpec(secretKey.toCharArray(), getSalt().getBytes(), iterationCount, keyLength);
 		SecretKey tmp = factory.generateSecret(spec);
 		SecretKey secret = new SecretKeySpec(tmp.getEncoded(), "AES");

@@ -71,6 +71,10 @@ public class S3Config {
 		return bucket;
 	}
 
+	public String getRegion() {
+		return region;
+	}
+	
 	public Properties getConfiguration() {
 		return props;
 	}

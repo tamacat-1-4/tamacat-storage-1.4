@@ -15,14 +15,14 @@ public class GoogleStorageAccess_test {
 		
 		FileData data = new FileData();
 		data.val(FileData.ID, "/");
-		data.val(FileData.CID, "test");
+		data.val(FileData.TID, "test");
 		GoogleStorageEngine engine = StorageFactory.getInstance("google", GoogleStorageEngine.class);
 		for (Blob o : engine.list(data)) {
 			System.out.println("name="+o.getName()+", size="+o.getSize()+", type="+o.getContentType());
 			
 			FileData f = new FileData();
 			f.val(FileData.ID, o.getName());
-			f.val(FileData.CID);
+			f.val(FileData.TID);
 			try {
 				System.out.println(Base64.getEncoder().encodeToString(IOUtils.toString(engine.getInputStream(f)).getBytes()));
 			} catch (IOException e) {
